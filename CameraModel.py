@@ -31,9 +31,16 @@ class CameraModel:
         self.cap.release()
         cv2.destroyWindow("preview")
 
-    def getStringVersionOfActualFrame(self):
+    def getActualFrame(self):
         rval, frame = self.cap.read()
         if rval:
+            return frame
+        return None
+
+    def getStringVersionOfActualFrame(self):
+        frame = self.getActualFrame()
+
+        if frame is not None:
             # Resize the image to reduce size if necessary
             max_height, max_width = 480, 640  # example values, adjust as needed
             frame = cv2.resize(frame, (max_width, max_height), interpolation=cv2.INTER_AREA)

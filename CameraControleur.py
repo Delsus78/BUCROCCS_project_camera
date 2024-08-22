@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 from CameraModel import CameraModel
 from UdpClient import UdpClient
@@ -15,7 +16,7 @@ class CameraControleur:
 
     def get_image(self):
         # Retrieve the image as a JSON string
-        return self.camera.getStringVersionOfActualFrame()
+        return self.camera.getActualFrame()
 
     async def start_camera(self):
         self.camera.start()
@@ -31,6 +32,18 @@ class CameraControleur:
 
             # sleep for 3 seconds
             await asyncio.sleep(3)
+
+    async def save_image_in_folder(self):
+        image = self.get_image()
+
+        # if the time is an hour exactly, with a precision of 4 secondes, save the image
+        if time.strftime('%M') == '00' and int(time.strftime('%S')) % 4 == 0 and image is not None:
+            image_name = f"image_{time.strftime('%Y%m%d-%H%M%S')}.jpg"
+            if image is not None:
+                with open(image_name, "wb") as file:
+                    file.write(image)
+            else:
+                print("No image retrieved from camera, Skipping ...")
 
     async def run(self):
         camera_task = asyncio.create_task(self.start_camera())
