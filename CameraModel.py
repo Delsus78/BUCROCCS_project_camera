@@ -23,6 +23,9 @@ class CameraModel:
     def camera_loop(self):
         rval, frame = self.cap.read()
 
+        # flip image
+        frame = cv2.flip(frame, -1)
+
         cv2.imshow("preview", frame)
         key = cv2.waitKey(20)
         if key == 27:  # exit on ESC
@@ -30,6 +33,8 @@ class CameraModel:
             cv2.destroyWindow("preview")
 
     def save_image(self, image_name, image):
+        # flip image
+        image = cv2.flip(image, 0)
         cv2.imwrite(image_name, image)
 
     def stop(self):
@@ -39,6 +44,8 @@ class CameraModel:
     def getActualFrame(self):
         rval, frame = self.cap.read()
         if rval:
+            # flip image
+            frame = cv2.flip(frame, 0)
             return frame
         return None
 
