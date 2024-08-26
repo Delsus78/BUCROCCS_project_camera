@@ -25,6 +25,7 @@ class UdpClient:
                 except Exception as e:
                     print(f"[ERROR] Error while sending data to server: {e}")
                     self.init_socket()
+                    await asyncio.sleep(0.5)
 
     def init_socket(self):
         try:
