@@ -62,7 +62,7 @@ class CameraModel:
             _, buffer = cv2.imencode('.jpg', frame, encode_param)
 
             # Check buffer size and adjust if necessary
-            while len(buffer) > 1024:
+            while len(buffer) > 16384:
                 encode_param[1] -= 5  # Reduce quality
                 _, buffer = cv2.imencode('.jpg', frame, encode_param)
                 if encode_param[1] <= 10:  # Prevent infinite loop by setting a minimum quality
