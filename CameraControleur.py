@@ -10,12 +10,13 @@ server_port = 5005
 
 
 class CameraControleur:
-    def __init__(self, vidIndex):
+    def __init__(self, vidIndex, sendDataToUDPNeeded):
         self.camera = CameraModel(vidIndex)
         self.udp_client = UdpClient(server_ip, server_port)
         self.loop = asyncio.get_event_loop()
         self.running = True
         self.last_executed_hour = None
+        self.sendDataToUDPNeeded = sendDataToUDPNeeded
 
     def get_image(self):
         return self.camera.getActualFrame()
@@ -30,7 +31,9 @@ class CameraControleur:
         while self.running:
             self.camera.camera_loop()
 
-            await self.send_image_to_server_periodically()
+            if self.sendDataToUDPNeeded:
+                await self.send_image_to_server_periodically()
+            
             self.save_image_in_folder()
 
             await asyncio.sleep(3)

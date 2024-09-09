@@ -14,7 +14,12 @@ def main(camIndex):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         camIndex = int(sys.argv[1])
-        main(camIndex)
+        sendDataToUDPNeeded = true
+
+        if len(sys.argv) > 2 and sys.argv[2] == '--no-udp'
+            sendDataToUDPNeeded = false
+
+        main(camIndex, sendDataToUDPNeeded)
     else:
         print("Please provide the camera index")
         sys.exit(1)
