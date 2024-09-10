@@ -10,13 +10,14 @@ server_port = 5005
 
 
 class CameraControleur:
-    def __init__(self, vidIndex, sendDataToUDPNeeded):
+    def __init__(self, vidIndex, sendDataToUDPNeeded, interval=60):
         self.camera = CameraModel(vidIndex)
         self.udp_client = UdpClient(server_ip, server_port)
         self.loop = asyncio.get_event_loop()
         self.running = True
-        self.last_executed_hour = None
+        self.last_executed_interval = None
         self.sendDataToUDPNeeded = sendDataToUDPNeeded
+        self.interval = interval
 
     def get_image(self):
         return self.camera.getActualFrame()
@@ -34,9 +35,10 @@ class CameraControleur:
             if self.sendDataToUDPNeeded:
                 await self.send_image_to_server_periodically()
             
-            self.save_image_in_folder()
+            self.save_image_in_folder(self.interval)
 
-            await asyncio.sleep(3)
+            if self.sendDataToUDPNeeded:
+                await asyncio.sleep(3)
 
     async def send_image_to_server_periodically(self):
         print("Sending image to server ...")
@@ -46,19 +48,21 @@ class CameraControleur:
         else:
             print("No image retrieved from camera, Skipping ...")
 
-    def save_image_in_folder(self):
+    def save_image_in_folder(self, interval):
         image = self.get_image()
 
         current_time = datetime.now()
-        current_hour = current_time.hour
+        # get the current interval, i.e. the current hour and minute
+        current_interval = current_time.strftime('%H:%M')
 
-        if current_hour != self.last_executed_hour:
-            if current_time.minute == 0:
+        if current_interval != self.last_executed_interval:
+            if current_time.minute % interval == 0:
                 image_name = f"image_{time.strftime('%Y%m%d-%H%M%S')}.jpg"
-                self.camera.save_image(image_name, image)
-                print(f"Image saved as {image_name}")
+                today_date = time.strftime('%Y%m%d')
+                image_path = f"images\\{today_date}"
+                self.camera.save_image(image_path, image_name, image)
 
-                self.last_executed_hour = current_hour
+                self.last_executed_interval = current_time.strftime('%H:%M')
 
     def run(self):
         self.loop.run_until_complete(self.main_loop())

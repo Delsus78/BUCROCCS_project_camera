@@ -1,11 +1,12 @@
 import base64
 import json
-
+import os
 import cv2
 
 
 class CameraModel:
     def __init__(self, vidIndex):
+        self.video_index = vidIndex
         self.cap = cv2.VideoCapture(vidIndex)
 
     def start(self):
@@ -32,10 +33,21 @@ class CameraModel:
             self.cap.release()
             cv2.destroyWindow("preview")
 
-    def save_image(self, image_name, image):
+    def save_image(self, path, image_name, image):
+        # populate the path with video index
+        path = os.path.join(path, str(self.video_index))
+
+        # create folder if not exists
+        if not os.path.exists(path):
+            os.makedirs(path)
+            print("Directory ", path, " Created ")
+
+        image_path = os.path.join(path, image_name)
+        print(f"Saving image as {image_path}")
+
         # flip image
-        image = cv2.flip(image, 0)
-        cv2.imwrite(image_name, image)
+        image = cv2.flip(image, -1)
+        cv2.imwrite(image_path, image)
 
     def stop(self):
         self.cap.release()
