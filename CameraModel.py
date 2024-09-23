@@ -1,5 +1,4 @@
 import base64
-import json
 import os
 import cv2
 
@@ -73,16 +72,9 @@ class CameraModel:
             encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 30]  # Adjust quality as needed
             _, buffer = cv2.imencode('.jpg', frame, encode_param)
 
-            # Check buffer size and adjust if necessary
-            while len(buffer) > 32768:
-                encode_param[1] -= 5  # Reduce quality
-                _, buffer = cv2.imencode('.jpg', frame, encode_param)
-                if encode_param[1] <= 10:  # Prevent infinite loop by setting a minimum quality
-                    break
-
             # Convert to Base64
             encoded_image = base64.b64encode(buffer).decode('utf-8')
 
             # Return the string
-            return  encoded_image
+            return encoded_image
         return None
