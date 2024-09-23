@@ -61,7 +61,7 @@ class CameraModel:
             return frame
         return None
 
-    def getActualFrameAsJson(self):
+    def getActualFrameAsStr(self):
         frame = self.getActualFrame()
 
         if frame is not None:
@@ -74,7 +74,7 @@ class CameraModel:
             _, buffer = cv2.imencode('.jpg', frame, encode_param)
 
             # Check buffer size and adjust if necessary
-            while len(buffer) > 16384:
+            while len(buffer) > 32768:
                 encode_param[1] -= 5  # Reduce quality
                 _, buffer = cv2.imencode('.jpg', frame, encode_param)
                 if encode_param[1] <= 10:  # Prevent infinite loop by setting a minimum quality
@@ -83,6 +83,6 @@ class CameraModel:
             # Convert to Base64
             encoded_image = base64.b64encode(buffer).decode('utf-8')
 
-            # Return the JSON object
-            return json.dumps({"image": encoded_image})
+            # Return the string
+            return  encoded_image
         return None

@@ -22,8 +22,8 @@ class CameraControleur:
     def get_image(self):
         return self.camera.getActualFrame()
 
-    def get_image_as_json(self):
-        return self.camera.getActualFrameAsJson()
+    def get_image_as_str(self):
+        return self.camera.getActualFrameAsStr()
 
     async def start_camera(self):
         self.camera.start()
@@ -42,7 +42,7 @@ class CameraControleur:
 
     async def send_image_to_server_periodically(self):
         print("Sending image to server ...")
-        image = self.get_image_as_json()
+        image = self.get_image_as_str()
         if image is not None:
             await self.udp_client.send_data_only("SET", "farm2000_camera", json_data=image)
         else:
